@@ -11,7 +11,7 @@
 #include <array>
 
 # define INFINITY 2100000000
-
+#define MAX_NODES (1000*1001)
 using namespace std;
 
 class Network {
@@ -178,14 +178,21 @@ public:
 		return ret;
 	}
 //#define DEBUG_QUEUE
-	template<typename T,int sz>
+	template<typename T>
 	class myq
 	{
 	public:
-		T q[sz];
+		T* q;
 		int head, tail;
-		myq() :head(0), tail(0)
-		{}
+		int sz;
+		myq(int _sz) :head(0), tail(0), sz(_sz)
+		{
+			q = new T[_sz];
+		}
+		void clear()
+		{
+			head = 0; tail = 0;
+		}
 		void push(T data)
 		{
 			q[tail] = data;
@@ -211,12 +218,13 @@ public:
 	void SPFA(vector<int> & dist, vector<pair<int, bool>> & path) {
 		//queue<int> q;
 		//vector<bool> inq(networkSize, false);
-		array<bool,1001> inq;
-		std::fill(inq.begin(), inq.end(), false);
+		static array<bool, MAX_NODES> inq;
+		std::fill(inq.begin(), inq.begin() + networkSize, false);
 
 		dist[superSource] = 0;
 		inq[superSource] = true;
-		myq<int, 1001> q;
+		static myq<int> q(networkSize);
+		q.clear();
 		q.push(superSource); // start from super source
 		while (!q.empty()) {
 			//int node = q.front();q.pop();
