@@ -8,6 +8,7 @@
 # include <sstream>
 # include <string>
 # include "lib_io.h"
+#include <array>
 
 # define INFINITY 2100000000
 
@@ -176,16 +177,50 @@ public:
 
 		return ret;
 	}
+//#define DEBUG_QUEUE
+	template<typename T,int sz>
+	class myq
+	{
+	public:
+		T q[sz];
+		int head, tail;
+		myq() :head(0), tail(0)
+		{}
+		void push(T data)
+		{
+			q[tail] = data;
+			tail++;
+#ifdef DEBUG_QUEUE
+			if (tail == head)
+				abort();
+#endif
+			tail = tail%sz;
+		}
+		T pop()
+		{
+			T ret=q[head];
+			head = (head+1)%sz;
+			return ret;
+		}
+		bool empty()
+		{
+			return head == tail;
+		}
+	};
+
 	void SPFA(vector<int> & dist, vector<pair<int, bool>> & path) {
-		queue<int> q;
-		vector<bool> inq(networkSize, false);
+		//queue<int> q;
+		//vector<bool> inq(networkSize, false);
+		array<bool,1001> inq;
+		std::fill(inq.begin(), inq.end(), false);
 
 		dist[superSource] = 0;
 		inq[superSource] = true;
+		myq<int, 1001> q;
 		q.push(superSource); // start from super source
 		while (!q.empty()) {
-			int node = q.front();
-			q.pop();
+			//int node = q.front();q.pop();
+			int node = q.pop();
 			inq[node] = false;
 
 			for (int i = 0; i < networkCost[node].size(); i++) {

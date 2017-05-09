@@ -2,7 +2,8 @@
 #include "lib_io.h"
 #include "lib_time.h"
 #include "stdio.h"
-
+#include <chrono>
+#include <iostream>
 int main(int argc, char *argv[])
 {
     print_time("Begin");
@@ -21,13 +22,13 @@ int main(int argc, char *argv[])
     }
 
     char *result_file = argv[2];
-
+	auto t=std::chrono::system_clock::now();
     deploy_server(topo, in_line_num, result_file);
 
     release_buff(topo, in_line_num);
 
     print_time("End");
-
+	std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - t).count();
 	return 0;
 }
 

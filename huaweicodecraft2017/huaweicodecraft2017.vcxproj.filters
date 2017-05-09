@@ -35,5 +35,11 @@
     <ClInclude Include="..\cdn\lib\lib_time.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\cdn\Network.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\PSO.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
