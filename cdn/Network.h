@@ -15,18 +15,45 @@
 using namespace std;
 
 class Network {
+public:
+	class Mat
+	{
+	public:
+		int* buf;
+		int sz;
+		Mat()
+		{
+			buf = nullptr;
+		}
+		
+		void alloc(int _sz, int val)
+		{
+			sz=_sz;
+			buf = new int[sz*sz];
+			for (int i = 0; i < sz*sz; i++)
+				buf[i] = val;
+		}
+		~Mat()
+		{
+			delete[] buf;
+		}
+		int& operator ()(int p1, int p2)
+		{
+			return buf[p1*sz + p2];
+		}
+	};
 private:
 	int deployCost;
 	int numNode;
 	int numLink;
 	int numConsumer;
 	int networkSize;
-	vector<vector<int>> networkCost;
-	vector<vector<int>> networkVol;
-	vector<vector<int>> networkFlow;
-	vector<vector<int>> RnetworkCost;
-	vector<vector<int>> RnetworkVol;
-	vector<vector<int>> RnetworkFlow;
+	Mat networkCost;
+	Mat networkVol;
+	Mat networkFlow;
+	Mat RnetworkCost;
+	Mat RnetworkVol;
+	Mat RnetworkFlow;
 	vector<pair<int, int>> consumer; // pair: (connect node, need flow)
 	int superSource, superSink;
 
@@ -34,39 +61,48 @@ private:
 		// init network/Rnetwork flow and super source first
 		for (int i = 0; i < networkSize; i++) {
 			for (int j = 0; j < networkSize; j++) {
-				networkFlow[i][j] = 0;
-				RnetworkFlow[j][i] = RnetworkVol[j][i];
+				networkFlow(i,j) = 0;
+				RnetworkFlow(j,i) = RnetworkVol(j,i);
 			}
 		}
 		for (int i = 0; i < networkSize; i++) {
-			networkCost[superSource][i] = INFINITY;
-			networkVol[superSource][i] = 0;
-			RnetworkCost[i][superSource] = INFINITY;
-			RnetworkVol[i][superSource] = 0;
-			RnetworkFlow[i][superSource] = RnetworkVol[i][superSource];
+			networkCost(superSource,i) = INFINITY;
+			networkVol(superSource,i) = 0;
+			RnetworkCost(i,superSource) = INFINITY;
+			RnetworkVol(i,superSource) = 0;
+			RnetworkFlow(i,superSource) = RnetworkVol(i,superSource);
 		}
 		for (int i = 0; i < serverpos.size(); i++) {
 			if (serverpos[i]) {
-				networkCost[superSource][i] = 0;
-				networkVol[superSource][i] = INFINITY;
-				RnetworkCost[i][superSource] = 0;
-				RnetworkVol[i][superSource] = INFINITY;
-				RnetworkFlow[i][superSource] = RnetworkVol[i][superSource];
+				networkCost(superSource,i) = 0;
+				networkVol(superSource,i) = INFINITY;
+				RnetworkCost(i,superSource) = 0;
+				RnetworkVol(i,superSource) = INFINITY;
+				RnetworkFlow(i,superSource) = RnetworkVol(i,superSource);
 			}
 		}
 	}
 public:
-	Network(char* inLines[MAX_IN_NUM]) {
+
+	Network(char* inLines[MAX_IN_NUM])
+	{
 		stringstream ss;
 		ss << inLines[0];
 		ss >> numNode >> numLink >> numConsumer;
 		networkSize = numNode + 2;
-		networkCost = vector<vector<int>>(networkSize, vector<int>(networkSize, INFINITY));
+
+		networkCost .alloc(networkSize, INFINITY);
+		networkVol.alloc(networkSize, 0);
+		networkFlow.alloc(networkSize, 0);
+		RnetworkCost.alloc(networkSize, INFINITY);
+		RnetworkVol.alloc(networkSize, 0);
+		RnetworkFlow.alloc(networkSize, 0);
+		/*networkCost = vector<vector<int>>(networkSize, vector<int>(networkSize, INFINITY));
 		networkVol = vector<vector<int>>(networkSize, vector<int>(networkSize, 0));
 		networkFlow = vector<vector<int>>(networkSize, vector<int>(networkSize, 0));
 		RnetworkCost = vector<vector<int>>(networkSize, vector<int>(networkSize, INFINITY));
 		RnetworkVol = vector<vector<int>>(networkSize, vector<int>(networkSize, 0));
-		RnetworkFlow = vector<vector<int>>(networkSize, vector<int>(networkSize, 0));
+		RnetworkFlow = vector<vector<int>>(networkSize, vector<int>(networkSize, 0));*/
 		consumer = vector<pair<int, int>>(numConsumer, make_pair(0, 0));
 
 		ss.clear();
@@ -78,11 +114,11 @@ public:
 			ss << inLines[i];
 			int from, to, vol, cost;
 			ss >> from >> to >> vol >> cost;
-			networkCost[from][to] = cost;
-			networkVol[from][to] = vol;
-			RnetworkCost[to][from] = -cost;
-			RnetworkVol[to][from] = vol;
-			RnetworkFlow[to][from] = vol;
+			networkCost(from,to) = cost;
+			networkVol(from,to) = vol;
+			RnetworkCost(to,from) = -cost;
+			RnetworkVol(to,from) = vol;
+			RnetworkFlow(to,from) = vol;
 		}
 
 		for (int i = 5 + numLink; i < 5 + numLink + numConsumer; i++) {
@@ -97,11 +133,11 @@ public:
 		superSource = numNode;
 		superSink = numNode + 1;
 		for (auto e : consumer) {
-			networkCost[e.first][superSink] = 0;
-			networkVol[e.first][superSink] = e.second;
-			RnetworkCost[superSink][e.first] = 0;
-			RnetworkVol[superSink][e.first] = e.second;
-			RnetworkFlow[superSink][e.first] = e.second;
+			networkCost(e.first,superSink) = 0;
+			networkVol(e.first,superSink) = e.second;
+			RnetworkCost(superSink,e.first) = 0;
+			RnetworkVol(superSink,e.first) = e.second;
+			RnetworkFlow(superSink,e.first) = e.second;
 		}
 	}
 
@@ -120,7 +156,7 @@ public:
 		for (auto e : consumer) {
 			int connect = e.first;
 			int need = e.second;
-			if (networkFlow[connect][superSink] < need) {
+			if (networkFlow(connect,superSink) < need) {
 				cost = INFINITY;
 				break;
 			}
@@ -147,8 +183,8 @@ public:
 			while (last > 0) {
 				int currVol;
 				if (!Rpath)
-					currVol = networkVol[last][tmp] - networkFlow[last][tmp];
-				else currVol = RnetworkVol[last][tmp] - RnetworkFlow[last][tmp];
+					currVol = networkVol(last,tmp) - networkFlow(last,tmp);
+				else currVol = RnetworkVol(last,tmp) - RnetworkFlow(last,tmp);
 				flow = min(flow, currVol);
 				tmp = last;
 				last = path[tmp].first;
@@ -160,14 +196,14 @@ public:
 			Rpath = path[tmp].second;
 			while (last > 0) {
 				if (!Rpath) {
-					ret += flow * networkCost[last][tmp];
-					networkFlow[last][tmp] += flow;
-					RnetworkFlow[tmp][last] -= flow;
+					ret += flow * networkCost(last,tmp);
+					networkFlow(last,tmp) += flow;
+					RnetworkFlow(tmp,last) -= flow;
 				}
 				else {
-					ret += flow * RnetworkCost[last][tmp];
-					RnetworkFlow[last][tmp] += flow;
-					networkFlow[tmp][last] -= flow;
+					ret += flow * RnetworkCost(last,tmp);
+					RnetworkFlow(last,tmp) += flow;
+					networkFlow(tmp,last) -= flow;
 				}
 				tmp = last;
 				last = path[tmp].first;
@@ -231,13 +267,13 @@ public:
 			int node = q.pop();
 			inq[node] = false;
 
-			for (int i = 0; i < networkCost[node].size(); i++) {
-				if (networkCost[node][i] == INFINITY)
+			for (int i = 0; i < networkSize; i++) {
+				if (networkCost(node,i) == INFINITY)
 					continue;
-				if (networkVol[node][i] - networkFlow[node][i] == 0) // fully used edge
+				if (networkVol(node,i) - networkFlow(node,i) == 0) // fully used edge
 					continue;
-				if (dist[i] > dist[node] + networkCost[node][i]) {
-					dist[i] = dist[node] + networkCost[node][i];
+				if (dist[i] > dist[node] + networkCost(node,i)) {
+					dist[i] = dist[node] + networkCost(node,i);
 					path[i] = make_pair(node, false);
 					if (!inq[i]) {
 						q.push(i);
@@ -245,13 +281,13 @@ public:
 					}
 				}
 			}
-			for (int i = 0; i < RnetworkCost[node].size(); i++) {
-				if (RnetworkCost[node][i] == INFINITY)
+			for (int i = 0; i < networkSize; i++) {
+				if (RnetworkCost(node,i) == INFINITY)
 					continue;
-				if (RnetworkVol[node][i] - RnetworkFlow[node][i] == 0) // fully used edge
+				if (RnetworkVol(node,i) - RnetworkFlow(node,i) == 0) // fully used edge
 					continue;
-				if (dist[i] > dist[node] + RnetworkCost[node][i]) {
-					dist[i] = dist[node] + RnetworkCost[node][i];
+				if (dist[i] > dist[node] + RnetworkCost(node,i)) {
+					dist[i] = dist[node] + RnetworkCost(node,i);
 					path[i] = make_pair(node, true);
 					if (!inq[i]) {
 						q.push(i);
@@ -269,7 +305,7 @@ public:
 	void printFlow() {
 		for (int i = 0; i < networkSize; i++) {
 			for (int j = 0; j < networkSize; j++) {
-				cout << networkFlow[i][j] << " ";
+				cout << networkFlow(i,j) << " ";
 			}
 			cout << endl;
 		}
