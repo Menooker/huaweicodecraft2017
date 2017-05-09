@@ -1,4 +1,6 @@
 #include "deploy.h"
+#include "Network.h"
+#include "PSO.h"
 #include "lib_io.h"
 #include "lib_time.h"
 #include <cstdio>
