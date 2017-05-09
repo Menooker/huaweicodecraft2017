@@ -86,6 +86,30 @@ private:
 			}
 		}
 	}
+	
+	void findRoute(vector<vector<int>> & ret, int start,  int flowin, vector<int> & prev) {
+		if (flowin <= 0)
+			return;
+		for (int i = 0; i < networkFlow[start].size(); i++) {
+			if (networkFlow[start][i] > 0) {
+				int flowout = min(flowin, networkFlow[start][i]);
+				flowin -= flowout;
+				networkFlow[start][i] -= flowout;
+				if (i == superSink) { // route found
+					prev.push_back(consumer[start].first);
+					prev.push_back(flowout);
+					ret.push_back(prev);
+					prev.pop_back();
+					prev.pop_back();
+				}
+				else {
+					prev.push_back(i);
+					findRoute(ret, i, flowout, prev);
+					prev.pop_back();
+				}
+			}
+		}
+	}
 public:
 	Network(char* inLines[MAX_IN_NUM]) {
 		stringstream ss;
@@ -140,6 +164,7 @@ public:
 	int getNumNode() { return numNode; }
 	int getNumLink() { return numLink; }
 	int getNumConsumer() { return numConsumer; }
+	unordered_map<int, pair<int, int>> getConsumerMap() { return consumer; }
 
 	int calCost(bool* serverpos) {
 		int cost = calMSF(serverpos);
@@ -176,7 +201,7 @@ public:
 			int tmp = superSink;
 			int last = path[tmp].first;
 			bool Rpath = path[tmp].second;
-			while (last > 0) {
+			while (last >= 0) {
 				int currVol;
 				if (!Rpath)
 					currVol = networkVol[last][tmp] - networkFlow[last][tmp];
@@ -190,7 +215,7 @@ public:
 			tmp = superSink;
 			last = path[tmp].first;
 			Rpath = path[tmp].second;
-			while (last > 0) {
+			while (last >= 0) {
 				if (!Rpath) {
 					ret += flow * networkCost[last][tmp];
 					networkFlow[last][tmp] += flow;
@@ -298,8 +323,24 @@ public:
 		}
 	}
 
-	vector<int> getResult(vector<bool> & globalMinDim) {
-		return vector<int>();
+	vector<vector<int>> getResult(vector<bool> & globalMinDim) {		
+		if (globalMin == INFINITY)
+			return vector<vector<int>>();
+
+		// calculate flow
+		calMSF(globalMinDim);
+
+		vector<vector<int>> ret;
+		for (int i = 0; i < globalMinDim.size();i++) {
+			if (globalMinDim[i]) {
+				// search routes
+				vector<int> tmp(1, i);
+				findRoute(ret, i, networkFlow[superSource][i], tmp);
+				networkFlow[superSource][i] = 0;
+			}
+		}
+
+		return ret;
 	}
 
 	void printFlow() {
