@@ -27,17 +27,27 @@ private:
 	// vector<int> maxEachIter;
 	// vector<vector<bool>> maxEachIterPos;
 
+	static int mrand()
+	{
+		static unsigned state1 = 21347;
+		static unsigned state2 = -11347;
+		unsigned ret = ((state1 * state1) << 20) ^ (state2*state1) ^ ((state2*state2) & 0x0000ffff);
+		state1 = (ret >> 16) - state2;
+		state2 = (ret & 0x0000ffff) - state1;
+		return ret & RAND_MAX;
+
+	}
 	void PSOinit(Network & network) {
 		cout << "===== PSOinit =====" << endl;
 		int gmaxpos = -1;
 		// randomly init particles
 		for (int i = 0; i < PARTICLESIZE; i++) {
-			int serverNum = (rand() % maxServerNum) + 1;
+			int serverNum = (mrand() % maxServerNum) + 1;
 			for (int j = 0; j < serverNum; j++) {
-				int randNode = rand() % dimension;
+				int randNode = mrand() % dimension;
 				if (!particle[i][randNode]) {
 					particle[i][randNode] = true;
-					velocity[i][randNode] = (((double)rand()) / RAND_MAX - 0.5);
+					velocity[i][randNode] = (((double)mrand()) / RAND_MAX - 0.5);
 				}
 			}
 			/*
@@ -49,7 +59,7 @@ private:
 			// check
 			/*
 			for (int j = 0; j < dimension; j++)
-				velocity[i][j] = (((double)rand()) / RAND_MAX - 0.5);
+				velocity[i][j] = (((double)mrand()) / RAND_MAX - 0.5);
 				*/
 			particleCurr[i] = network.calCost(particle[i]);
 			// update local max and global max
@@ -98,8 +108,8 @@ public:
 			for (int j = 0; j < PARTICLESIZE; j++) {
 				for (int k = 0; k < dimension; k++) {
 					// update speed
-					float rand1 = (float)rand() / RAND_MAX;
-					float rand2 = (float)rand() / RAND_MAX;
+					float rand1 = (float)mrand() / RAND_MAX;
+					float rand2 = (float)mrand() / RAND_MAX;
 					float selfLearn = C1*rand1-1, globalLearn = C2*rand2-1;
 					if (localMin[j] != INFINITY)
 						selfLearn = C1*rand1*(localMinDim[j][k] - particle[j][k]);
@@ -115,7 +125,7 @@ public:
 
 					// update particle
 					threshold = 1.0 / (1 + exp(-velocity[j][k]));
-					if ((float)rand() / RAND_MAX < threshold)
+					if ((float)mrand() / RAND_MAX < threshold)
 						particle[j][k] = 1;
 					else particle[j][k] = 0;
 				}
