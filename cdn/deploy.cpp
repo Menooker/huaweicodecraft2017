@@ -9,13 +9,22 @@
 void deploy_server(char* inLines[MAX_IN_NUM], int inLineNum, const char * const filename)
 {
 	assert(inLineNum < MAX_IN_NUM);
-	
+	/*
 	printf("line count %d\n", inLineNum);
 	for (int i = 0; i < inLineNum; ++i)
 	{
 		printf("line %d=%s\n", i, inLines[i]);
 	}
+	*/
+	srand((unsigned long)time(NULL));
+	Network network(inLines);
 
+	PSO pso(network);
+	pso.doPSO(network);
+
+	vector<int> result = network.getResult(pso.getGlobalMinDim());
+	// network.printFlow();
+	
 	std::string res;
 	res.append("4");
 	res.append("\n\n");
