@@ -16,25 +16,38 @@ private:
 	int dimension;
 	int maxServerNum;
 	vector<int> particleCurr;
-	vector<vector<bool>> particle;
-	vector<vector<float>> velocity;
+	Network::Mat<bool> particle;
+	Network::Mat<float> velocity;
 
 	vector<int> localMin;
-	vector<vector<bool>> localMinDim;
+	Network::Mat<bool> localMinDim;
 	int globalMin;
 	vector<bool> globalMinDim;
 
 	// vector<int> maxEachIter;
 	// vector<vector<bool>> maxEachIterPos;
-
+	template<typename T1,typename T2>
+	static void copy_arr(T1 dest,T2 src, int sz)
+	{
+		for (int i = 0; i < sz; i++)
+		{
+			dest[i] = src[i];
+		}
+	}
 	static int mrand()
 	{
-		static unsigned state1 = time(NULL)>>16;
-		static unsigned state2 = time(NULL) & 0x0000ffff;
-		unsigned ret = ((state1 * state1) << 20) ^ (state2*state1) ^ ((state2*state2) & 0x0000ffff);
-		state1 = (ret >> 16) - state2;
-		state2 = (ret & 0x0000ffff) - state1;
-		return ret & RAND_MAX;
+		static unsigned x = time(NULL)>>16;
+		static unsigned y = time(NULL) & 0x0000ffff;
+		static unsigned z = 123456789;
+		x ^= x << 16;
+		x ^= x >> 5;
+		x ^= x << 1;
+
+		unsigned t = x;
+		x = y;
+		y = z;
+		z = t ^ x ^ y;
+		return x & RAND_MAX;
 
 	}
 	void PSOinit(Network & network) {
@@ -64,14 +77,14 @@ private:
 			particleCurr[i] = network.calCost(particle[i]);
 			// update local max and global max
 			localMin[i] = particleCurr[i];
-			localMinDim[i] = particle[i];
+			copy_arr(localMinDim[i], particle[i], dimension);
 			if (localMin[i] < globalMin) {
 				globalMin = localMin[i];
 				gmaxpos = i;
 			}
 		}
 		if (gmaxpos > 0)
-			globalMinDim = localMinDim[gmaxpos];
+			copy_arr(globalMinDim, localMinDim[gmaxpos], dimension); 
 		cout << "initial global min: " << globalMin << endl;
 	}
 public:
@@ -79,11 +92,11 @@ public:
 		dimension = network.getNumNode();
 		maxServerNum = network.getNumConsumer();
 		particleCurr = vector<int>(PARTICLESIZE, 0);
-		particle = vector<vector<bool>>(PARTICLESIZE, vector<bool>(dimension, false));
-		velocity = vector<vector<float>>(PARTICLESIZE, vector<float>(dimension, 0.0));
+		particle .alloc(PARTICLESIZE, dimension, false);
+		velocity .alloc(PARTICLESIZE, dimension, 0.0);
 
 		localMin = vector<int>(PARTICLESIZE, INFINITY);
-		localMinDim = vector<vector<bool>>(PARTICLESIZE, vector<bool>(dimension, false));
+		localMinDim .alloc(PARTICLESIZE, dimension, false);
 		globalMin = INFINITY;
 		globalMinDim = vector<bool>(dimension, false);
 
@@ -138,7 +151,7 @@ public:
 				particleCurr[j] = network.calCost(particle[j]);
 				if (particleCurr[j] < localMin[j]) {
 					localMin[j] = particleCurr[j];
-					localMinDim[j] = particle[j];
+					copy_arr(localMinDim[j], particle[j],dimension);
 				}
 				if (particleCurr[j] < globalMin) {
 					globalMin = particleCurr[j];
@@ -147,7 +160,7 @@ public:
 			}
 			if (gmaxpos >= 0) {
 				cout << "update global Min: " << globalMin << endl;
-				globalMinDim = particle[gmaxpos];
+				copy_arr(globalMinDim , particle[gmaxpos],dimension);
 			}
 		}
 	}
