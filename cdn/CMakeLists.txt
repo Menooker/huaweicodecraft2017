@@ -1,16 +1,16 @@
-# CMake Ф°─Д╫▌Г┴┬Ф°╛Е▐╥Х╕│Ф╠┌
+# CMake вН╣м╟Ф╠╬╨ер╙гС
 cmake_minimum_required(VERSION 2.8)
 
-# И║╧Г⌡╝Д©║Ф│╞
+# оНд©пео╒
 project(cdn)
 
-# includeХ╥╞Е╬└
+# includeб╥╬╤
 include_directories(${PROJECT_SOURCE_DIR}/lib)
 
-# Х╝╬Г╫╝Е▐╞Ф┴╖Х║▄Ф√┤Д╩╤Г■÷Ф┬░Х╥╞Е╬└
+# иХжц©иж╢ппнд╪ЧиЗЁиб╥╬╤
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../bin)
 
-# Г■÷Ф┬░debugГ┴┬Ф°╛
+# иЗЁиdebug╟Ф╠╬
 SET(CMAKE_BUILD_TYPE "release")
 if (CMAKE_BUILD_TYPE STREQUAL debug)
     add_definitions(-D_DEBUG)
@@ -18,9 +18,9 @@ endif ()
 SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb -std=c++11")
 SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall -std=c++11")
 
-# Ф÷╔Ф┴╬Е╫⌠Е┴█Г⌡╝Е╫∙Д╦▀Г └Ф┴─Ф°┴Ф╨░Ф√┤Д╩╤
-# Е╧╤Е╟├Е░█Г╖╟Д©²Е╜≤Е┬╟ DIR_LIB_SRCS Е▐≤И┤▐
+# ╡Иур╣╠г╟д©б╪об╣дкЫспт╢нд╪Ч
+# ╡╒╫╚цШЁф╠ё╢Ф╣╫ DIR_LIB_SRCS ╠Да©
 aux_source_directory(. DIR_SRCS)
 
-# Ф▄┤Е╝ Г■÷Ф┬░Г⌡╝Ф═┤
+# ж╦╤╗иЗЁид©╠Й
 add_executable(cdn ${DIR_SRCS})

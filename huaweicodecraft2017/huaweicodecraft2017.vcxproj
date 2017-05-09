@@ -80,12 +80,27 @@
   <ItemGroup>
     <ClCompile Include="..\cdn\cdn.cpp" />
     <ClCompile Include="..\cdn\deploy.cpp" />
+    <ClCompile Include="..\cdn\Genome.cpp" />
+    <ClCompile Include="..\cdn\Graph.cpp" />
     <ClCompile Include="..\cdn\io.cpp" />
+    <ClCompile Include="..\cdn\linear_programming.cpp" />
+    <ClCompile Include="..\cdn\MiniCostFlow.cpp" />
+    <ClCompile Include="..\cdn\partGraph.cpp" />
+    <ClCompile Include="..\cdn\PSO.cpp" />
+    <ClCompile Include="..\cdn\solveAlgorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\cdn\deploy.h" />
+    <ClInclude Include="..\cdn\lib\deploy.h" />
+    <ClInclude Include="..\cdn\lib\Genome.h" />
+    <ClInclude Include="..\cdn\lib\Graph.h" />
     <ClInclude Include="..\cdn\lib\lib_io.h" />
     <ClInclude Include="..\cdn\lib\lib_time.h" />
+    <ClInclude Include="..\cdn\lib\linear_programming.h" />
+    <ClInclude Include="..\cdn\lib\MiniCostFlow.h" />
+    <ClInclude Include="..\cdn\lib\partGraph.h" />
+    <ClInclude Include="..\cdn\lib\PSO.h" />
+    <ClInclude Include="..\cdn\lib\solveAlgorithm.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

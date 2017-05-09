@@ -6,25 +6,27 @@
 int main(int argc, char *argv[])
 {
     print_time("Begin");
-    char *topo[MAX_IN_NUM];
-    int in_line_num;
+    char *topo[MAX_EDGE_NUM];
+    int line_num;
 
+    argv[1] = "case_example/case0.txt";
     char *topo_file = argv[1];
+    
+    line_num = read_file(topo, MAX_EDGE_NUM, topo_file);
 
-    in_line_num = read_file(topo, MAX_IN_NUM, topo_file);
-
-    printf("line num is :%d \n", in_line_num);
-    if (in_line_num == 0)
+    printf("line num is :%d \n", line_num);
+    if (line_num == 0)
     {
         printf("Please input valid topo file.\n");
         return -1;
     }
 
+    argv[2] = "result/case0.txt";
     char *result_file = argv[2];
 
-    deploy_server(topo, in_line_num, result_file);
+    deploy_server(topo, line_num, result_file);
 
-    release_buff(topo, in_line_num);
+    release_buff(topo, line_num);
 
     print_time("End");
 

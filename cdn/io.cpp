@@ -1,18 +1,16 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cassert>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 #include <time.h>
 #include <sys/timeb.h>
+#ifndef _WIN32
 #include <errno.h>
-
-#ifndef WIN32
 #include <unistd.h>
-#endif
-
 #include <signal.h>
-#include "lib_time.h"
-#include "lib_io.h"
+#endif
+#define MAX_LINE_LEN 55000
+
 #define INLINE  static __inline
 #ifdef _DEBUG
 #define PRINT   printf
@@ -24,7 +22,7 @@
 INLINE void write_file(const bool cover, const char * const buff, const char * const filename);
 
 
-void print_time(const char * const head)
+void print_time(const char *head)
 {
 #ifdef _DEBUG
     struct timeb rawtime;
@@ -76,9 +74,9 @@ int read_file(char ** const buff, const unsigned int spec, const char * const fi
     return cnt;
 }
 
-void write_result(const char * buff, const char * const filename)
+void write_result(const char * const buff,const char * const filename)
 {
-    
+	// �Ը��ǵķ�ʽд��
     write_file(1, buff, filename);
 
 }
@@ -94,7 +92,7 @@ INLINE void write_file(const bool cover, const char * const buff, const char * c
     if (buff == NULL)
         return;
 
-    const char *write_type = cover ? "w" : "a";
+    const char *write_type = cover ? "w" : "a";//1:����д�ļ���0:׷��д�ļ�
     FILE *fp = fopen(filename, write_type);
     if (fp == NULL)
     {

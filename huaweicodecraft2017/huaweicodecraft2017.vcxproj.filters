@@ -24,6 +24,27 @@
     <ClCompile Include="..\cdn\io.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\cdn\Genome.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cdn\Graph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cdn\linear_programming.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cdn\MiniCostFlow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cdn\partGraph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cdn\PSO.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cdn\solveAlgorithm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\cdn\deploy.h">
@@ -33,6 +54,30 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\cdn\lib\lib_time.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\deploy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\Genome.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\Graph.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\linear_programming.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\MiniCostFlow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\partGraph.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\PSO.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cdn\lib\solveAlgorithm.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
