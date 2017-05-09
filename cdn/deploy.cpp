@@ -24,16 +24,31 @@ void deploy_server(char* inLines[MAX_IN_NUM], int inLineNum, const char * const 
 	PSO pso(network);
 	pso.doPSO(network);
 
-	vector<int> result = network.getResult(pso.getGlobalMinDim());
+	vector<vector<int>> result = network.getResult(pso.getGlobalMinDim());
 	// network.printFlow();
-	
-	std::string res;
-	res.append("4");
-	res.append("\n\n");
-	res.append("204 201 101 12 70").append("\n");
-	res.append("204 207 206 104 12 50").append("\n");
-	res.append("204 207 208 103 12 30").append("\n");
-	res.append("204 203 202 102 12 40").append("\n");
+	cout << "===== Final Result =====" << endl;
+	cout << "Total Cost: " << pso.getGlobalMin() << endl;
+	cout << result.size() << " routes: " << endl;
+	for (auto e : result) {
+		for (auto i : e) {
+			cout << i << " ";
+		}
+		cout << endl;
+	}
 
-    write_result(res.c_str(), filename);
+	stringstream res;
+	if (result.size() == 0)
+		res << "NA";
+	else {
+		res << result.size();
+		res << endl << endl;
+		for (auto e : result) {
+			for (auto i : e) {
+				res << i << " ";
+			}
+			res << endl;
+		}
+	}
+
+    	write_result(res.str().c_str(), filename);
 }
