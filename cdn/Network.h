@@ -249,6 +249,10 @@ public:
 		{
 			return head == tail;
 		}
+		~myq()
+		{
+			delete[]q;
+		}
 	};
 
 	void SPFA(vector<int> & dist, vector<pair<int, bool>> & path) {

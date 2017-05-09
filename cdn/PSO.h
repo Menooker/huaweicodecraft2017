@@ -29,8 +29,8 @@ private:
 
 	static int mrand()
 	{
-		static unsigned state1 = 21347;
-		static unsigned state2 = -11347;
+		static unsigned state1 = time(NULL)>>16;
+		static unsigned state2 = time(NULL) & 0x0000ffff;
 		unsigned ret = ((state1 * state1) << 20) ^ (state2*state1) ^ ((state2*state2) & 0x0000ffff);
 		state1 = (ret >> 16) - state2;
 		state2 = (ret & 0x0000ffff) - state1;
