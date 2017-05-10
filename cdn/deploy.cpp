@@ -24,7 +24,7 @@ void deploy_server(char* inLines[MAX_IN_NUM], int inLineNum, const char * const 
 	PSO pso(network);
 	pso.doPSO(network);
 
-	vector<vector<int>> result = network.getResult(pso.getGlobalMinDim());
+	vector<vector<int>> result = network.getResult(pso.getGlobalMin(), pso.getGlobalMinDim());
 	// network.printFlow();
 	cout << "===== Final Result =====" << endl;
 	cout << "Total Cost: " << pso.getGlobalMin() << endl;

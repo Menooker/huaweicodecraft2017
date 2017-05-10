@@ -58,7 +58,7 @@ private:
 	Mat<int> RnetworkCost;
 	Mat<int> RnetworkVol;
 	Mat<int> RnetworkFlow;
-	vector<pair<int, int>> consumer; // pair: (connect node, need flow)
+	unordered_map<int,pair<int, int>> consumer; // pair: (cid, need flow)
 	int superSource, superSink;
 
 	void MSFinit(bool* serverpos) {
@@ -90,7 +90,7 @@ private:
 	void findRoute(vector<vector<int>> & ret, int start,  int flowin, vector<int> & prev) {
 		if (flowin <= 0)
 			return;
-		for (int i = 0; i < networkFlow[start].size(); i++) {
+		for (int i = 0; i < networkSize; i++) {
 			if (networkFlow[start][i] > 0) {
 				int flowout = min(flowin, networkFlow[start][i]);
 				flowin -= flowout;
@@ -122,7 +122,7 @@ public:
 		RnetworkCost.alloc(networkSize, networkSize, INFINITY);
 		RnetworkVol.alloc(networkSize, networkSize, 0);
 		RnetworkFlow.alloc(networkSize, networkSize, 0);
-		consumer = vector<pair<int, int>>(numConsumer, make_pair(0, 0));
+		// consumer = vector<pair<int, int>>(numConsumer, make_pair(0, 0));
 
 		ss.clear();
 		ss << inLines[2];
@@ -153,10 +153,10 @@ public:
 		superSink = numNode + 1;
 		for (auto e : consumer) {
 			networkCost[e.first][superSink] = 0;
-			networkVol[e.first][superSink] = e.second;
+			networkVol[e.first][superSink] = e.second.second;
 			RnetworkCost[superSink][e.first] = 0;
-			RnetworkVol[superSink][e.first] = e.second;
-			RnetworkFlow[superSink][e.first] = e.second;
+			RnetworkVol[superSink][e.first] = e.second.second;
+			RnetworkFlow[superSink][e.first] = e.second.second;
 		}
 	}
 
@@ -176,7 +176,7 @@ public:
 		// TODO legel check?
 		for (auto e : consumer) {
 			int connect = e.first;
-			int need = e.second;
+			int need = e.second.second;
 			if (networkFlow[connect][superSink] < need) {
 				cost = INFINITY;
 				break;
@@ -323,7 +323,7 @@ public:
 		}
 	}
 
-	vector<vector<int>> getResult(vector<bool> & globalMinDim) {		
+	vector<vector<int>> getResult(int globalMin, bool * globalMinDim) {		
 		if (globalMin == INFINITY)
 			return vector<vector<int>>();
 
@@ -331,7 +331,7 @@ public:
 		calMSF(globalMinDim);
 
 		vector<vector<int>> ret;
-		for (int i = 0; i < globalMinDim.size();i++) {
+		for (int i = 0; i < numNode;i++) {
 			if (globalMinDim[i]) {
 				// search routes
 				vector<int> tmp(1, i);

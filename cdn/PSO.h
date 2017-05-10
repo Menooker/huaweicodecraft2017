@@ -22,7 +22,7 @@ private:
 	vector<int> localMin;
 	Network::Mat<bool> localMinDim;
 	int globalMin;
-	vector<bool> globalMinDim;
+	bool * globalMinDim;
 
 	// vector<int> maxEachIter;
 	// vector<vector<bool>> maxEachIterPos;
@@ -98,7 +98,8 @@ public:
 		localMin = vector<int>(PARTICLESIZE, INFINITY);
 		localMinDim .alloc(PARTICLESIZE, dimension, false);
 		globalMin = INFINITY;
-		globalMinDim = vector<bool>(dimension, false);
+		globalMinDim = new bool[dimension];
+		memset(globalMinDim, sizeof(bool)*dimension, 0);
 
 		// maxEachIter = vector<int>(ITER, -1);
 		// maxEachIterPos = vector<vector<bool>>(ITER, vector<bool>(dimension, false));
@@ -106,7 +107,7 @@ public:
 	int getGlobalMin() {
 		return globalMin;
 	}
-	vector<bool> & getGlobalMinDim() {
+	bool * getGlobalMinDim() {
 		return globalMinDim;
 	}
 
